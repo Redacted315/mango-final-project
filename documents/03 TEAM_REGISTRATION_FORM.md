@@ -182,7 +182,7 @@ By signing below, we agree to:
 
 1. Matthew Lipnicki Date: Nov 27, 2025
 
-2. _______________________________ Date: ___________
+2. Jasraaj Jhajj Date: November 27, 2025
 
 3. _______________________________ Date: ___________
 
