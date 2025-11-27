@@ -37,8 +37,8 @@
 - [ ] Component 1: Student Class (`student.py`)
 - [ ] Component 2: StudentManager Class (`student_manager.py`)
 - [ ] Component 3: Course Class & CourseManager (`course.py` & `course_manager.py`)
-- [ ] Component 4: EnrollmentManager Class (`enrollment_manager.py`)
-- [ ] Component 5: Main Application (`main.py`)
+- [x] Component 4: EnrollmentManager Class (`enrollment_manager.py`)
+- [x] Component 5: Main Application (`main.py`)
 
 ---
 
