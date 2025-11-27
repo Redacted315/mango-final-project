@@ -180,7 +180,7 @@ By signing below, we agree to:
 
 **Team Member Signatures:**
 
-1. _______________________________ Date: ___________
+1. Matthew Lipnicki Date: Nov 27, 2025
 
 2. _______________________________ Date: ___________
 
