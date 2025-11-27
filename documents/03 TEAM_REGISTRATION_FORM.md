@@ -127,11 +127,11 @@
 
 Before submitting, verify:
 
-- [ ] All 5 team members are listed with complete information
-- [ ] Each component is assigned to exactly ONE person
-- [ ] All 5 components are assigned (no duplicates, no missing)
-- [ ] All student IDs and emails are correct
-- [ ] Team communication method is established
+- [x] All 2 team members are listed with complete information
+- [x] Each component is assigned to exactly ONE person
+- [x] All 2 components are assigned (no duplicates, no missing)
+- [x] All student IDs and emails are correct
+- [x] Team communication method is established
 
 ---
 
