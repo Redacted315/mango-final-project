@@ -3,8 +3,8 @@ EnrollmentManager Class - Course Registration System
 =====================================================
 
 TEAM MEMBER ASSIGNED TO THIS CLASS:
-Name: _______________________
-Student ID: _________________
+Name: Matthew Lipnicki
+Student ID: 000987196
 Date Completed: _____________
 
 PURPOSE:
@@ -51,14 +51,19 @@ class EnrollmentManager:
         - Call read_enrollments_file() to load existing data
         - Update course enrollment counts
 
-        Author: [Your Name]
+        Author: Matthew Lipnicki
         Date: [Date]
         Version: 1.0
         """
-        # TODO: Store manager references
-        # TODO: Initialize _enrollments as empty list
-        # TODO: Call read_enrollments_file()
+        # Store manager references as class variables
+        self.student_manager = student_manager
+        self.course_manager = course_manager
+        # Initialize _enrollments as empty list
+        self._enrollments = []
+        # Call read_enrollments_file()
+        self.read_enrollments_file()
         # TODO: Update course enrollment counts
+        # locally? the course.enrolled_count? there should be no need to update on initialization
         pass
 
     def read_enrollments_file(self):
@@ -82,13 +87,26 @@ class EnrollmentManager:
         - For each line, create a dictionary and add to _enrollments
         - Handle FileNotFoundError
 
-        Author: [Your Name]
+        Author: Matthew Lipnicki
         Date: [Date]
         """
-        # TODO: Implement file reading
-        # TODO: Convert student_id to int
-        # TODO: Store each enrollment as dictionary
-        pass
+        # read enrollments.csv
+        try:
+            with open('data\\enrollments.csv', 'r') as enrollments_file:
+                result = []
+                for line in enrollments_file:
+                    row_data = line.split(",")
+                    result.append(row_data)
+            # Convert student_id to int
+            for row in result[1:]: # start at second item to skip header
+                row[0] = int(row[0])        
+            # add each enrollment as dictionary to self._enrollments
+                self._enrollments.append({'student_id': row[0],
+                                          'course_code': row[1],
+                                          'semester': row[2],
+                                          'grade': row[3].removesuffix("\n")})
+        except FileNotFoundError:
+            print("Error: The specified file was not found.")
 
     def write_enrollments_to_file(self):
         """
@@ -101,12 +119,14 @@ class EnrollmentManager:
         - Write header: "student_id,course_code,semester,grade"
         - For each enrollment dictionary, write CSV line
 
-        Author: [Your Name]
+        Author: Matthew Lipnicki
         Date: [Date]
         """
-        # TODO: Implement file writing
-        pass
-
+        with open("data\\enrollments.csv", 'w') as enrollments_file:
+            enrollments_file.write("student_id,course_code,semester,grade\n")
+            for enrollment in self._enrollments:
+                enrollments_file.write(f"{enrollment['student_id']},{enrollment['course_code']},{enrollment['semester']},{enrollment['grade']}\n")
+        
     def register_student_in_course(self):
         """
         Register a student in a course through user input.
@@ -135,15 +155,43 @@ class EnrollmentManager:
         Author: [Your Name]
         Date: [Date]
         """
-        # TODO: Get input from user
-        # TODO: Validate student exists
-        # TODO: Validate course exists
-        # TODO: Check if already enrolled
-        # TODO: Check if course is full
-        # TODO: Add enrollment
-        # TODO: Update course count
-        # TODO: Save to file
-        pass
+        # TODO: Get input from user ✅
+        registrant_id = input("Enter student ID: ")
+        registrant_course_code = input("Enter course code: ")
+        registrant_semester = input("Enter semester (e.g., Fall2024): ")
+        try:
+        # TODO: Validate student exists ✅
+            student = self.student_manager.find_student_by_id(registrant_id)
+            if student is None:
+                raise LookupError("student ID not found")
+        # TODO: Validate course exists ✅
+            course = self.course_manager.find_course_by_code(registrant_course_code)
+            if course is None:
+                raise LookupError("course code not found")
+        # TODO: Check if already enrolled ✅
+            for enrollment in self._enrollments:
+                if enrollment['student_id'] == registrant_id:
+                    if enrollment['course_code'] == registrant_course_code:
+                        raise PermissionError("student is already enrolled in course")
+        # TODO: Check if course is full ✅
+            if course.is_full():
+                raise PermissionError("course is already full")
+        # TODO: Add enrollment ✅
+            self._enrollments.append({"student_id": registrant_id,
+                                      "course_code": registrant_course_code,
+                                      "semester": registrant_semester,
+                                      "grade": ''})
+        # TODO: Update course count ✅
+            course.set_enrolled_count(course.enrolled_count + 1)
+        # TODO: Save to file ✅
+            self.write_enrollments_to_file()
+        
+        except LookupError as error:
+            print(error)
+        except PermissionError as error:
+            print(error)
+
+
 
     def drop_student_from_course(self):
         """
