@@ -155,28 +155,28 @@ class EnrollmentManager:
         Author: [Your Name]
         Date: [Date]
         """
-        # TODO: Get input from user ✅
+        # Get input from user
         registrant_id = input("Enter student ID: ")
         registrant_course_code = input("Enter course code: ")
         registrant_semester = input("Enter semester (e.g., Fall2024): ")
         try:
-        # TODO: Validate student exists ✅
+        # Validate student exists
             student = self.student_manager.find_student_by_id(registrant_id)
             if student is None:
                 raise LookupError("student ID not found")
-        # TODO: Validate course exists ✅
+        # Validate course exists
             course = self.course_manager.find_course_by_code(registrant_course_code)
             if course is None:
                 raise LookupError("course code not found")
-        # TODO: Check if already enrolled ✅
+        # Check if already enrolled
             for enrollment in self._enrollments:
                 if enrollment['student_id'] == registrant_id:
                     if enrollment['course_code'] == registrant_course_code:
                         raise PermissionError("student is already enrolled in course")
-        # TODO: Check if course is full ✅
+        # Check if course is full
             if course.is_full():
                 raise PermissionError("course is already full")
-        # TODO: Add enrollment ✅
+        # Add enrollment
             self._enrollments.append({"student_id": registrant_id,
                                       "course_code": registrant_course_code,
                                       "semester": registrant_semester,
