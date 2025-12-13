@@ -5,7 +5,7 @@ EnrollmentManager Class - Course Registration System
 TEAM MEMBER ASSIGNED TO THIS CLASS:
 Name: Matthew Lipnicki
 Student ID: 000987196
-Date Completed: _____________
+Date Completed: 12/12/2025
 
 PURPOSE:
 Manages student enrollments in courses. Handles loading/saving enrollment
@@ -52,7 +52,7 @@ class EnrollmentManager:
         - Update course enrollment counts
 
         Author: Matthew Lipnicki
-        Date: [Date]
+        Date: 12/10/2025
         Version: 1.0
         """
         # Store manager references as class variables
@@ -88,7 +88,7 @@ class EnrollmentManager:
         - Handle FileNotFoundError
 
         Author: Matthew Lipnicki
-        Date: [Date]
+        Date: 12/10/2025
         """
         # read enrollments.csv
         try:
@@ -120,7 +120,7 @@ class EnrollmentManager:
         - For each enrollment dictionary, write CSV line
 
         Author: Matthew Lipnicki
-        Date: [Date]
+        Date: 12/10/2025
         """
         with open("data\\enrollments.csv", 'w') as enrollments_file:
             enrollments_file.write("student_id,course_code,semester,grade\n")
@@ -152,8 +152,8 @@ class EnrollmentManager:
         - Update course enrollment count
         - Save to file
 
-        Author: [Your Name]
-        Date: [Date]
+        Author: Matthew Lipnicki
+        Date: 12/10/2025
         """
         # Get input from user
         registrant_id = input("Enter student ID: ")
@@ -181,17 +181,15 @@ class EnrollmentManager:
                                       "course_code": registrant_course_code,
                                       "semester": registrant_semester,
                                       "grade": ''})
-        # TODO: Update course count ✅
+        # Update course count
             course.set_enrolled_count(course.enrolled_count + 1)
-        # TODO: Save to file ✅
+        # Save to file
             self.write_enrollments_to_file()
         
         except LookupError as error:
             print(error)
         except PermissionError as error:
             print(error)
-
-
 
     def drop_student_from_course(self):
         """
@@ -214,15 +212,27 @@ class EnrollmentManager:
         - Update course enrollment count
         - Save to file
 
-        Author: [Your Name]
-        Date: [Date]
+        Author: Matthew Lipnicki
+        Date: 12/12/2025
         """
-        # TODO: Get input from user
-        # TODO: Find enrollment
-        # TODO: Remove if found
-        # TODO: Update course count
-        # TODO: Save to file
-        pass
+        # Get input from user
+        student_id = input("Enter student ID: ")
+        course_code = input("Enter course code: ")
+        # Find enrollment
+        enrollment_to_drop = None
+        idx_to_drop = None
+        for idx, enrollment in enumerate(self._enrollments):
+            if enrollment["student_id"] == student_id and enrollment["course_code"] == course_code:
+                enrollment_to_drop = enrollment
+                idx_to_drop = idx
+        # Remove if found
+        if enrollment_to_drop != None:
+            del self._enrollments[idx_to_drop]
+        # Update course count
+        course = self.course_manager.find_course_by_code(course_code)
+        course.set_enrolled_count(course.enrolled_count() - 1)
+        # Save to file
+        self.write_enrollments_to_file()
 
     def display_student_schedule(self):
         """
@@ -243,15 +253,39 @@ class EnrollmentManager:
         Total Courses: [count]
         Total Credits: [sum of credits]
 
-        Author: [Your Name]
-        Date: [Date]
+        Author: Matthew Lipnicki
+        Date: 12/12/2025
         """
-        # TODO: Get student ID from user
-        # TODO: Validate student exists
-        # TODO: Find all enrollments for this student
-        # TODO: Display in formatted table
-        # TODO: Calculate and display totals
-        pass
+        # Get student ID from user
+        student_id = input("Enter student ID: ")
+        # Validate student exists
+        student = self.student_manager.find_student_by_id(student_id)
+        if student == None:
+            print("Error: Student does not exist")
+            return
+        # Find all enrollments for this student
+        student_enrollments = []
+        for enrollment in self._enrollments:
+            if enrollment["student_id"] == student_id:
+                student_enrollments.append(enrollment)
+        # Display in formatted table
+        print(f"==========================================\nSCHEDULE FOR: [{student.get_full_name()}]\n==========================================")
+        print(f"Code      Course Name              Semester    Grade")
+        print(f"----------------------------------------------------------")
+        total_credits = 0
+        for enrollment in student_enrollments:
+            course = self.course_manager.find_course_by_code(enrollment["course_code"])
+            course_code = enrollment["course_code"]
+            course_name = course.course_name()
+            semester = enrollment["semester"]
+            grade = enrollment["grade"]
+            total_credits += course.credits()
+            print(f"{course_code}" + " "*(17-len(course_code)) + f"{course_name}" + " "*(25-len(course_name)) + f"{semester}" + " "*(12-len(semester)) + grade)
+        print("==========================================")
+        # Calculate and display totals
+        total_courses = len(student_enrollments)
+        print(f"Total Courses: {total_courses}")
+        print(f"Total Credits: {total_credits}")
 
     def display_course_roster(self):
         """
@@ -271,15 +305,37 @@ class EnrollmentManager:
         ==========================================
         Enrolled: [count] / [capacity]
 
-        Author: [Your Name]
-        Date: [Date]
+        Author: Matthew Lipnicki
+        Date: 12/12/2025
         """
-        # TODO: Get course code from user
-        # TODO: Validate course exists
-        # TODO: Find all enrollments for this course
-        # TODO: Display in formatted table with student details
-        # TODO: Show enrollment count
-        pass
+        # Get course code from user
+        course_code = input("Enter course code: ")
+        # Validate course exists
+        course = self.course_manager.find_course_by_code(course_code)
+        if  course == None:
+            print(f"Error: course {course_code} not found")
+            return
+        # Find all enrollments for this course
+        enrollments_in_course = []
+        for enrollment in self._enrollments:
+            if enrollment["course_code"] == course_code:
+                enrollments_in_course.append(enrollment)
+        # Display in formatted table with student details
+        # header
+        print(f"==========================================\nROSTER FOR: [{course_code}] - [{course.course_name()}]\n==========================================")
+        #table header
+        print("Student ID    Name                    Year    Grade")
+        print("----------------------------------------------------------")
+        for enrollment in enrollments_in_course:
+            student = self.student_manager.find_student_by_id(enrollment["student_id"])
+            student_name = student.get_full_name()
+
+            print(f"{enrollment["student_id"]}" + " "*4 + student_name + " "*(24-len(student_name)) + f"{student.year()}" + " "*7 + enrollment["grade"])
+        # Show enrollment count
+        capacity = course.capacity()
+        enrolled = course.enrolled_count()
+        print("==========================================")
+        print(f"Enrolled: {enrolled} / {capacity}")
 
     def assign_grade(self):
         """
@@ -298,15 +354,28 @@ class EnrollmentManager:
         - Success: "Grade [grade] assigned to [Student Name] for [Course Name]"
         - Error messages for validation failures
 
-        Author: [Your Name]
-        Date: [Date]
+        Author: Matthew Lipnicki
+        Date: 12/12/2025
         """
-        # TODO: Get input from user
-        # TODO: Validate enrollment exists
-        # TODO: Validate grade format
-        # TODO: Update grade in enrollment dictionary
-        # TODO: Save to file
-        pass
+        # Get input from user
+        student_id = input("Enter student ID: ")
+        course_code = input("Enter course code: ")
+        grade = input("Enter grade (A, A-, B+, B, B-, C+, C, C-, D, F): ")
+        # Validate enrollment exists
+        if not self.is_student_enrolled_in_course(student_id, course_code):
+            print(f"Error: Student {student_id} is not enrolled in course {course_code}")
+            return
+        # Validate grade format
+        valid_grades = ["A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D", "F"]
+        if not grade in valid_grades:
+            print("Error: Invalid Grade. Must be A, A-, B+, B, B-, C+, C, C-, D, F")
+            return
+        # Update grade in enrollment dictionary
+        for enrollment in self._enrollments:
+            if enrollment["student_id"] == student_id and enrollment["course_code"] == course_code:
+                enrollment["grade"] = grade
+        # Save to file
+        self.write_enrollments_to_file()
 
     def is_student_enrolled_in_course(self, student_id, course_code):
         """
@@ -319,11 +388,14 @@ class EnrollmentManager:
         Returns:
             bool: True if enrolled, False otherwise
 
-        Author: [Your Name]
-        Date: [Date]
+        Author: Matthew Lipnicki
+        Date: 12/12/2025
         """
-        # TODO: Search _enrollments for matching student_id and course_code
-        pass
+        # Search _enrollments for matching student_id and course_code
+        for enrollment in self._enrollments:
+            if enrollment["student_id"] == student_id and enrollment["course_code"] == course_code:
+                return True
+        return False
 
     def get_student_enrollments(self, student_id):
         """
@@ -335,12 +407,16 @@ class EnrollmentManager:
         Returns:
             list: List of enrollment dictionaries for this student
 
-        Author: [Your Name]
-        Date: [Date]
+        Author: Matthew Lipnicki
+        Date: 12/12/2025
         """
-        # TODO: Filter _enrollments for matching student_id
-        # TODO: Return list of matching enrollments
-        pass
+        # Filter _enrollments for matching student_id
+        students_enrollments = []
+        for enrollment in self._enrollments:
+            if enrollment["student_id"] == student_id:
+                students_enrollments.append(enrollment)
+        # Return list of matching enrollments
+        return students_enrollments
 
     def get_course_enrollments(self, course_code):
         """
@@ -352,12 +428,16 @@ class EnrollmentManager:
         Returns:
             list: List of enrollment dictionaries for this course
 
-        Author: [Your Name]
-        Date: [Date]
+        Author: Matthew Lipnicki
+        Date: 12/12/2025
         """
-        # TODO: Filter _enrollments for matching course_code
-        # TODO: Return list of matching enrollments
-        pass
+        # Filter _enrollments for matching course_code
+        list_of_enrollments = []
+        for enrollment in self._enrollments:
+            if enrollment["course_code"] == course_code:
+                list_of_enrollments.append(enrollment)
+        # Return list of matching enrollments
+        return list_of_enrollments
 
     def get_enrollment_count_for_course(self, course_code):
         """
@@ -369,11 +449,15 @@ class EnrollmentManager:
         Returns:
             int: Number of students enrolled
 
-        Author: [Your Name]
-        Date: [Date]
+        Author: Matthew Lipnicki
+        Date: 12/12/2025
         """
-        # TODO: Count enrollments matching course_code
-        pass
+        # Count enrollments matching course_code
+        count = 0
+        for enrollment in self._enrollments:
+            if enrollment["course_code"] == course_code:
+                count += 1
+        return count
 
     def display_all_enrollments(self):
         """
@@ -390,12 +474,23 @@ class EnrollmentManager:
         =================================================================================
         Total Enrollments: [count]
 
-        Author: [Your Name]
-        Date: [Date]
+        Author: Matthew Lipnicki
+        Date: 12/12/2025
         """
-        # TODO: Display all enrollments in formatted table
-        # TODO: Show student and course details for each enrollment
-        pass
+        # Display all enrollments in formatted table
+        print("=================================================================================\nALL ENROLLMENTS\n=================================================================================")
+        print("Student ID    Student Name           Course Code    Course Name          Semester")
+        print("---------------------------------------------------------------------------------")
+        for enrollment in self._enrollments:
+            student = self.student_manager.find_student_by_id(enrollment["student_id"])
+            course = self.course_manager.find_course_by_code(enrollment["course_code"])
+            student_name = student.get_full_name()
+            course_code = enrollment["course_code"]
+            course_name = course.course_name()
+            semester = enrollment["semester"]
+            print(f"{enrollment["student_id"]}" + "    " + f"{student_name}" + " "*(23-len(student_name)) + f"{course_code}" + " "*(15-len(course_code)) + f"{course_name}" + " "*(21-len(course_name)) + f"{semester}")
+        print("=================================================================================")
+        print(f"Total Enrollments: {len(self._enrollments)}")
 
 
 # ==============================================================================
