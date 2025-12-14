@@ -320,7 +320,7 @@ class EnrollmentManager:
         for enrollment in self._enrollments:
             if enrollment["course_code"] == course_code:
                 enrollments_in_course.append(enrollment)
-        # Display in formatted table with student details
+        # Display in formatted table with student details :)
         # header
         print(f"==========================================\nROSTER FOR: [{course_code}] - [{course.course_name()}]\n==========================================")
         #table header
@@ -492,6 +492,8 @@ class EnrollmentManager:
         print("=================================================================================")
         print(f"Total Enrollments: {len(self._enrollments)}")
 
+    def get_number_of_enrollments(self):
+        return len(self._enrollments)
 
 # ==============================================================================
 # TESTING CODE (Do not modify)
